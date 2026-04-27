@@ -35,7 +35,6 @@ CREATE TABLE products (
 CREATE TABLE carts (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_carts_user
