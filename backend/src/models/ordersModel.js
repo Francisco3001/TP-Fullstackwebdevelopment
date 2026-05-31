@@ -39,6 +39,26 @@ const getOrderById = async (id) => {
   return result.rows[0];
 };
 
+const getOrdersByUserId = async (userId) => {
+  const result = await pool.query(
+    `
+    SELECT 
+      o.id,
+      o.user_id,
+      o.total,
+      o.status,
+      o.created_at,
+      o.updated_at
+    FROM orders o
+    WHERE o.user_id = $1
+    ORDER BY o.id DESC
+    `,
+    [userId]
+  );
+
+  return result.rows;
+};
+
 const getOrderItems = async (orderId) => {
   const result = await pool.query(
     `
@@ -120,6 +140,7 @@ const getProductPrice = async (productId) => {
 module.exports = {
   getAllOrders,
   getOrderById,
+  getOrdersByUserId,
   getOrderItems,
   createOrder,
   createOrderItem,

@@ -77,6 +77,30 @@ router.get("/", authMiddleware, roleMiddleware("admin"), ordersController.getOrd
 
 /**
  * @swagger
+ * /api/orders/me:
+ *   get:
+ *     summary: Obtener las ordenes del usuario autenticado
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de ordenes del usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/me", authMiddleware, ordersController.getMyOrders);
+
+/**
+ * @swagger
  * /api/orders/{id}:
  *   get:
  *     summary: Obtener orden por ID

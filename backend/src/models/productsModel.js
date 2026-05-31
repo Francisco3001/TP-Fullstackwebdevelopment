@@ -1,25 +1,45 @@
 const pool = require("../config/db");
 
-const getAllProducts = async (page = 1, limit = 10) => {
-
+const getAllProducts = async (page = 1, limit = 10, category = null, search = null) => {
   const offset = (page - 1) * limit;
 
-  const productsResult = await pool.query(
-    `
+  let queryStr = `
     SELECT 
       p.*,
       c.name AS category_name
     FROM products p
     JOIN categories c ON p.category_id = c.id
-    ORDER BY p.id ASC
-    LIMIT $1 OFFSET $2
-    `,
-    [limit, offset]
-  );
+    WHERE p.is_active = true
+  `;
+  let countQueryStr = `SELECT COUNT(*) FROM products WHERE is_active = true`;
+  
+  const queryParams = [];
+  const countParams = [];
+  
+  let paramIndex = 1;
+  
+  if (category) {
+    queryStr += ` AND p.category_id = $${paramIndex}`;
+    countQueryStr += ` AND category_id = $${paramIndex}`;
+    queryParams.push(category);
+    countParams.push(category);
+    paramIndex++;
+  }
 
-  const countResult = await pool.query(
-    `SELECT COUNT(*) FROM products`
-  );
+  if (search) {
+    queryStr += ` AND p.name ILIKE $${paramIndex}`;
+    countQueryStr += ` AND p.name ILIKE $${paramIndex}`;
+    const searchTerm = `%${search}%`;
+    queryParams.push(searchTerm);
+    countParams.push(searchTerm);
+    paramIndex++;
+  }
+  
+  queryStr += ` ORDER BY p.id ASC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+  queryParams.push(limit, offset);
+
+  const productsResult = await pool.query(queryStr, queryParams);
+  const countResult = await pool.query(countQueryStr, countParams);
 
   const total = Number(countResult.rows[0].count);
 
@@ -102,10 +122,23 @@ const deleteProduct = async (id) => {
   return result.rows[0];
 };
 
+const decrementStock = async (productId, quantity) => {
+  const result = await pool.query(
+    `UPDATE products 
+     SET stock = stock - $1, 
+         updated_at = CURRENT_TIMESTAMP
+     WHERE id = $2 
+     RETURNING *`,
+    [quantity, productId]
+  );
+  return result.rows[0];
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  decrementStock
 };

@@ -52,37 +52,48 @@ const addCartItem = async (req, res) => {
   }
 };
 
-const updateCartItem = async (req, res) => {
+const updateCartItem = async (req,res) => {
   try {
-    const item = await cartService.updateCartItem(req.params.id, req.user.id, req.body);
-
-    if (!item) {
-      return res.status(404).json({ message: "Item del carrito no encontrado" });
-    }
+    const item =
+      await cartService.updateCartItem(
+        req.user.id,
+        req.body.product_id,
+        req.body.quantity
+      );
 
     res.json({
-      message: "Item del carrito actualizado exitosamente",
+      message:
+        "Item del carrito actualizado exitosamente",
       item,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error al actualizar item del carrito", error: error.message });
+    res.status(500).json({
+      message:
+        "Error al actualizar item del carrito",
+      error: error.message,
+    });
   }
 };
 
-const deleteCartItem = async (req, res) => {
+const deleteCartItem = async (req,res) => {
   try {
-    const item = await cartService.deleteCartItem(req.params.id, req.user.id);
-
-    if (!item) {
-      return res.status(404).json({ message: "Item del carrito no encontrado" });
-    }
+    const item =
+      await cartService.deleteCartItem(
+        req.user.id,
+        req.body.product_id
+      );
 
     res.json({
-      message: "Item del carrito eliminado exitosamente",
+      message:
+        "Item del carrito eliminado exitosamente",
       item,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error al eliminar item del carrito", error: error.message });
+    res.status(500).json({
+      message:
+        "Error al eliminar item del carrito",
+      error: error.message,
+    });
   }
 };
 

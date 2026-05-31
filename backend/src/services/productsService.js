@@ -1,7 +1,7 @@
 const productsModel = require("../models/productsModel");
 
-const getProducts = async (page, limit) => {
-  return await productsModel.getAllProducts(page, limit);
+const getProducts = async (page, limit, category, search) => {
+  return await productsModel.getAllProducts(page, limit, category, search);
 };
 
 const getProductById = async (id) => {

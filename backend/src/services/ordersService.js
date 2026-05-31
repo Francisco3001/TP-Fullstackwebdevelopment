@@ -1,12 +1,23 @@
 const ordersModel = require("../models/ordersModel");
 const cartModel = require("../models/cartModel");
+const productsModel = require("../models/productsModel");
 
 const getOrders = async () => {
   return await ordersModel.getAllOrders();
 };
 
+const getOrdersByUserId = async (userId) => {
+  const orders = await ordersModel.getOrdersByUserId(userId);
+  const ordersWithItems = await Promise.all(
+    orders.map(async (order) => {
+      const items = await ordersModel.getOrderItems(order.id);
+      return { ...order, items };
+    })
+  );
+  return ordersWithItems;
+};
+
 const getOrderById = async (id) => {
-  const userId = req.user.id;
   const order = await ordersModel.getOrderById(id);
 
   if (!order) return null;
@@ -58,6 +69,8 @@ const createOrderFromCart = async (userId) => {
       unit_price,
       subtotal,
     });
+
+    await productsModel.decrementStock(item.product_id, quantity);
   }
   const updatedOrder = await ordersModel.updateOrderTotal(order.id, total);
 
@@ -73,6 +86,7 @@ const createOrderFromCart = async (userId) => {
 
 module.exports = {
   getOrders,
+  getOrdersByUserId,
   getOrderById,
   createOrderFromCart
 };

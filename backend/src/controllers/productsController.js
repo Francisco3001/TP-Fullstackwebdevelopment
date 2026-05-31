@@ -3,8 +3,10 @@ const productsService = require("../services/productsService");
 const getProducts = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;   
-    const products = await productsService.getProducts(page, limit);
+    const limit = Number(req.query.limit) || 10;
+    const category = req.query.category || null;
+    const search = req.query.search || null;
+    const products = await productsService.getProducts(page, limit, category, search);
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: "Error al buscar productos", error: error.message });

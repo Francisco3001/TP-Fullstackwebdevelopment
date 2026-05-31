@@ -19,17 +19,15 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const result = await authService.login(req.body);
+    const { user, token } = await authService.login(req.body);
 
     res.json({
-      message: "Usuario logueado exitosamente",
-      user: result.user,
-      token: result.token,
+      user,
+      token,
     });
-  } catch (error) {
+  } catch (err) {
     res.status(401).json({
-      message: "Error logueando usuario",
-      error: error.message,
+      message: err.message,
     });
   }
 };

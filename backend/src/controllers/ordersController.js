@@ -9,6 +9,15 @@ const getOrders = async (req, res) => {
   }
 };
 
+const getMyOrders = async (req, res) => {
+  try {
+    const orders = await ordersService.getOrdersByUserId(req.user.id);
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener mis órdenes", error: error.message });
+  }
+};
+
 const getOrderById = async (req, res) => {
   try {
     const order = await ordersService.getOrderById(req.params.id);
@@ -41,6 +50,7 @@ const createOrderFromCart = async (req, res) => {
 
 module.exports = {
   getOrders,
+  getMyOrders,
   getOrderById,
   createOrderFromCart,
 };

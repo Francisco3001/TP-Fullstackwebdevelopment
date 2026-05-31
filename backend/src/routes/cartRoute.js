@@ -169,7 +169,7 @@ router.post("/items", authMiddleware, cartController.addCartItem);
  *       500:
  *         description: Error interno del servidor
  */
-router.put("/items/:id", authMiddleware, cartController.updateCartItem);
+router.put("/items", authMiddleware, cartController.updateCartItem);
 
 /**
  * @swagger
@@ -200,6 +200,6 @@ router.put("/items/:id", authMiddleware, cartController.updateCartItem);
  *       500:
  *         description: Error interno del servidor
  */
-router.delete("/items/:id", authMiddleware, cartController.deleteCartItem);
+router.delete("/items", authMiddleware, cartController.deleteCartItem);
 
 module.exports = router;

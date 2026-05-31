@@ -98,6 +98,25 @@ const deleteCartItemByUserId = async (itemId, userId) => {
   return result.rows[0];
 };
 
+const deleteCartItemByProductId = async (
+  productId,
+  userId
+) => {
+  const result = await pool.query(
+    `
+    DELETE FROM cart_items ci
+    USING carts c
+    WHERE ci.cart_id = c.id
+      AND ci.product_id = $1
+      AND c.user_id = $2
+    RETURNING ci.*
+    `,
+    [productId, userId]
+  );
+
+  return result.rows[0];
+};
+
 const getProductPrice = async (productId) => {
   const result = await pool.query(
     `
@@ -124,6 +143,45 @@ const clearCartItems = async (cartId) => {
   return result.rows;
 };
 
+const getCartItemByProduct = async (
+  cartId,
+  productId
+) => {
+  const result = await pool.query(
+    `
+    SELECT *
+    FROM cart_items
+    WHERE cart_id = $1
+      AND product_id = $2
+    `,
+    [cartId, productId]
+  );
+
+  return result.rows[0];
+};
+
+const getCartItemById = async (
+  itemId,
+  userId
+) => {
+  const result = await pool.query(
+    `
+    SELECT
+      ci.*,
+      p.stock
+    FROM cart_items ci
+    JOIN carts c
+      ON ci.cart_id = c.id
+    JOIN products p
+      ON ci.product_id = p.id
+    WHERE ci.id = $1
+      AND c.user_id = $2
+    `,
+    [itemId, userId]
+  );
+
+  return result.rows[0];
+};
 
 module.exports = {
   getCartByUserId,
@@ -133,5 +191,8 @@ module.exports = {
   updateCartItemByUserId,
   deleteCartItemByUserId,
   getProductPrice,
-  clearCartItems
+  clearCartItems,
+  getCartItemByProduct,
+  getCartItemById,
+  deleteCartItemByProductId,
 };
